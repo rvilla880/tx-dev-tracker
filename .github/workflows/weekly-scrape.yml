@@ -1,0 +1,73 @@
+name: Weekly TX Dev Tracker Scrape
+
+on:
+  schedule:
+    # Every Sunday at 6:00 AM Central (11:00 AM UTC)
+    - cron: "0 11 * * 0"
+  workflow_dispatch:  # Also allows manual trigger from GitHub UI
+
+jobs:
+  scrape-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed to commit filings.json back to repo
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          pip install playwright pdfplumber requests beautifulsoup4 anthropic
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Run scraper
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python tx_dev_scraper.py \
+            --output public/filings.json \
+            --lookback-days 10 \
+            --enrich \
+            --delay 2.5
+
+      - name: Check if filings.json changed
+        id: changes
+        run: |
+          git diff --quiet public/filings.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push updated filings
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "TX Dev Tracker Bot"
+          git config user.email "actions@github.com"
+          git add public/filings.json
+          git commit -m "Weekly update: $(date '+%Y-%m-%d') filings refresh"
+          git push
+
+      - name: Generate and send weekly email
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python send_weekly_email.py
+
+      - name: Summary
+        run: |
+          echo "✅ Scrape complete"
+          python -c "
+          import json
+          with open('public/filings.json') as f:
+              d = json.load(f)
+          print(f\"Found {d['filings_found']} filings across {d['counties_scraped']} counties\")
+          if d['errors']:
+              print(f\"Errors on {len(d['errors'])} counties: {[e['county'] for e in d['errors']]}\")
+          "
