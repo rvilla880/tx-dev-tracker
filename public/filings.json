@@ -1,8 +1,84 @@
 {
-  "generated_at": null,
+  "generated_at": "2026-06-19T23:46:20.586529",
   "lookback_days": 10,
-  "counties_scraped": 0,
-  "filings_found": 0,
+  "counties_scraped": 26,
+  "filings_found": 5,
   "errors": [],
-  "filings": []
+  "filings": [
+    {
+      "id": "Denton_2026-06-19_74613",
+      "date": "2026-06-19",
+      "county": "Denton",
+      "hub": "fort_worth",
+      "developer": "",
+      "project": "",
+      "type": "Agenda Item",
+      "acres": 0.0,
+      "units": 0,
+      "address": "",
+      "permit": "Property",
+      "status": "pending",
+      "notes": "Insufficient data provided in raw text to extract residential development agenda item details."
+    },
+    {
+      "id": "Ellis_2026-06-19_88722",
+      "date": "2026-06-19",
+      "county": "Ellis",
+      "hub": "fort_worth",
+      "developer": "",
+      "project": "",
+      "type": "Replat",
+      "acres": 0.0,
+      "units": 0,
+      "address": "",
+      "permit": "Approval",
+      "status": "pending",
+      "notes": "No residential development information found in this document - this is a Bail Bond Board meeting agenda list for Ellis County."
+    },
+    {
+      "id": "Ellis_2026-06-19_48437",
+      "date": "2026-06-19",
+      "county": "Ellis",
+      "hub": "fort_worth",
+      "developer": "",
+      "project": "Stewart's Property",
+      "type": "Replat",
+      "acres": 0.0,
+      "units": 2,
+      "address": "",
+      "permit": "for",
+      "status": "under_review",
+      "notes": "Replat of Lot 1, Block 1 into two lots (1A and 1B) for consideration by Ellis County Commissioners' Court."
+    },
+    {
+      "id": "Comal_2026-06-19_55908",
+      "date": "2026-06-19",
+      "county": "Comal",
+      "hub": "georgetown",
+      "developer": "",
+      "project": "",
+      "type": "Agenda Item",
+      "acres": 0.0,
+      "units": 0,
+      "address": "",
+      "permit": "ting",
+      "status": "pending",
+      "notes": "No residential development agenda item details found in the provided text"
+    },
+    {
+      "id": "Comal_2026-06-19_55617",
+      "date": "2026-06-19",
+      "county": "Comal",
+      "hub": "georgetown",
+      "developer": "",
+      "project": "",
+      "type": "Agenda Item",
+      "acres": 0.0,
+      "units": 0,
+      "address": "",
+      "permit": "",
+      "status": "pending",
+      "notes": "No residential development agenda item details found in the provided text."
+    }
+  ]
 }
