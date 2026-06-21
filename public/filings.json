@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-06-19T23:46:20.586529",
+  "generated_at": "2026-06-21T13:12:37.013858",
   "lookback_days": 10,
   "counties_scraped": 26,
   "filings_found": 5,
   "errors": [],
   "filings": [
     {
-      "id": "Denton_2026-06-19_74613",
-      "date": "2026-06-19",
+      "id": "Denton_2026-06-21_14118",
+      "date": "2026-06-21",
       "county": "Denton",
       "hub": "fort_worth",
       "developer": "",
@@ -18,11 +18,11 @@
       "address": "",
       "permit": "Property",
       "status": "pending",
-      "notes": "Insufficient data provided in raw text to extract residential development agenda item details."
+      "notes": "No residential development agenda item content found in provided text"
     },
     {
-      "id": "Ellis_2026-06-19_88722",
-      "date": "2026-06-19",
+      "id": "Ellis_2026-06-21_23357",
+      "date": "2026-06-21",
       "county": "Ellis",
       "hub": "fort_worth",
       "developer": "",
@@ -33,11 +33,11 @@
       "address": "",
       "permit": "Approval",
       "status": "pending",
-      "notes": "No residential development information found in this document - this is a Bail Bond Board meeting agenda list for Ellis County."
+      "notes": "No residential development information found in this document - content consists only of Bail Bond Board meeting agenda listings"
     },
     {
-      "id": "Ellis_2026-06-19_48437",
-      "date": "2026-06-19",
+      "id": "Ellis_2026-06-21_22443",
+      "date": "2026-06-21",
       "county": "Ellis",
       "hub": "fort_worth",
       "developer": "",
@@ -48,11 +48,11 @@
       "address": "",
       "permit": "for",
       "status": "under_review",
-      "notes": "Replat of Lot 1, Block 1 into two lots (1A and 1B) for consideration by Ellis County Commissioners' Court."
+      "notes": "Replat of Lot 1, Block 1 into two lots (1A and 1B) for Ellis County Commissioners' Court consideration."
     },
     {
-      "id": "Comal_2026-06-19_55908",
-      "date": "2026-06-19",
+      "id": "Comal_2026-06-21_38395",
+      "date": "2026-06-21",
       "county": "Comal",
       "hub": "georgetown",
       "developer": "",
@@ -63,11 +63,11 @@
       "address": "",
       "permit": "ting",
       "status": "pending",
-      "notes": "No residential development agenda item details found in the provided text"
+      "notes": "No residential development agenda item content found in provided text"
     },
     {
-      "id": "Comal_2026-06-19_55617",
-      "date": "2026-06-19",
+      "id": "Comal_2026-06-21_84788",
+      "date": "2026-06-21",
       "county": "Comal",
       "hub": "georgetown",
       "developer": "",
@@ -78,7 +78,7 @@
       "address": "",
       "permit": "",
       "status": "pending",
-      "notes": "No residential development agenda item details found in the provided text."
+      "notes": "No residential development agenda item details found in provided text"
     }
   ]
 }
