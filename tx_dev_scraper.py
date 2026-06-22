@@ -223,6 +223,51 @@ class BaseScraper:
         text_lower = text.lower()
         return any(kw in text_lower for kw in RESIDENTIAL_KEYWORDS)
 
+    def find_context_windows(self, text: str, window_chars: int = 1500) -> list[str]:
+        """
+        Instead of splitting on blank lines (unreliable on scraped HTML text),
+        find every keyword match and grab a generous window of surrounding
+        text around it. Only merge windows whose matches are genuinely close
+        together (within ~half a window), so unrelated agenda items don't
+        get smeared into one noisy blob.
+        """
+        text_lower = text.lower()
+        match_positions = []
+        for kw in RESIDENTIAL_KEYWORDS:
+            start = 0
+            while True:
+                idx = text_lower.find(kw, start)
+                if idx == -1:
+                    break
+                match_positions.append(idx)
+                start = idx + len(kw)
+
+        if not match_positions:
+            return []
+
+        match_positions.sort()
+
+        # Merge only matches close enough to plausibly be the same item
+        merge_gap = window_chars // 3
+        groups = [[match_positions[0]]]
+        for pos in match_positions[1:]:
+            if pos - groups[-1][-1] <= merge_gap:
+                groups[-1].append(pos)
+            else:
+                groups.append([pos])
+
+        windows = []
+        half = window_chars // 2
+        for group in groups:
+            center_start = group[0]
+            center_end = group[-1]
+            win_start = max(0, center_start - half)
+            win_end = min(len(text), center_end + half)
+            windows.append(text[win_start:win_end])
+
+        # Cap total windows per page to avoid excessive API calls
+        return windows[:8]
+
     def extract_filing_details(self, text: str, county_name: str, hub: str, date: str) -> dict | None:
         """
         Parse raw agenda item text into a structured filing dict.
@@ -278,7 +323,7 @@ class BaseScraper:
             "permit": permit,
             "status": "pending",
             "notes": notes,
-            "raw_text": text[:1000],  # Keep raw for AI extraction
+            "raw_text": text[:3000],  # Generous window kept for AI extraction
         }
 
     def fetch(self, url: str, use_playwright: bool = False) -> str:
@@ -346,13 +391,11 @@ class CivicPlusScraper(BaseScraper):
                 page_html = self.fetch(full_url)
                 text = BeautifulSoup(page_html,"html.parser").get_text(" ")
 
-            # Split into agenda items and check each
-            items = re.split(r"\n{2,}|\t{2,}", text)
-            for item in items:
-                if len(item.strip()) < 30:
-                    continue
+            # Find keyword-centered context windows instead of naive blank-line splitting
+            windows = self.find_context_windows(text)
+            for window in windows:
                 filing = self.extract_filing_details(
-                    item,
+                    window,
                     self.county["name"],
                     self.county["hub"],
                     datetime.now().strftime("%Y-%m-%d")
@@ -390,13 +433,11 @@ class StaticScraper(BaseScraper):
 
         soup = BeautifulSoup(html, "html.parser")
         text = soup.get_text(" ")
-        items = re.split(r"\n{2,}", text)
+        windows = self.find_context_windows(text)
 
-        for item in items:
-            if len(item.strip()) < 40:
-                continue
+        for window in windows:
             filing = self.extract_filing_details(
-                item,
+                window,
                 self.county["name"],
                 self.county["hub"],
                 datetime.now().strftime("%Y-%m-%d")
@@ -428,12 +469,10 @@ class LegistarScraper(BaseScraper):
             html = self.fetch(self.county["agenda_url"], use_playwright=True)
             soup = BeautifulSoup(html, "html.parser")
             text = soup.get_text(" ")
-            items = re.split(r"\n{3,}", text)
-            for item in items:
-                if len(item.strip()) < 40:
-                    continue
+            windows = self.find_context_windows(text)
+            for window in windows:
                 filing = self.extract_filing_details(
-                    item, self.county["name"], self.county["hub"],
+                    window, self.county["name"], self.county["hub"],
                     datetime.now().strftime("%Y-%m-%d")
                 )
                 if filing:
@@ -489,27 +528,31 @@ def enrich_with_claude(filing: dict) -> dict:
     if not api_key or not filing.get("raw_text"):
         return filing
 
-    prompt = f"""Extract structured data from this Texas county clerk agenda item about residential development.
+    prompt = f"""You are extracting structured data from messy, scraped Texas county government website text. The text may include navigation menus, headers, and unrelated content mixed in with the actual agenda item — focus only on the residential development content.
 
-Raw text:
+Raw scraped text:
 {filing['raw_text']}
+
+Look carefully for: a company or person name (developer/applicant), a subdivision/project/property name, a street address or road intersection, acreage, and a lot/unit count.
 
 Return ONLY valid JSON (no markdown), with these fields:
 {{
-  "developer": "developer or applicant company name, or empty string",
-  "project": "project or subdivision name, or empty string",
-  "acres": "numeric acreage as number, or 0",
-  "units": "number of lots/units/homes as integer, or 0",
-  "address": "street address or location description, or empty string",
-  "status": "one of: approved, pending, under_review, denied",
-  "notes": "one-sentence summary of what's being approved"
-}}"""
+  "developer": "developer, applicant, or owner company/person name found in the text, or empty string if truly not present",
+  "project": "subdivision, project, or property name, or empty string if truly not present",
+  "acres": "numeric acreage as a number, or 0 if not found",
+  "units": "number of lots/units/homes as an integer, or 0 if not found",
+  "address": "street address, road intersection, or location description, or empty string if not found",
+  "status": "one of: approved, pending, under_review, denied (infer from context like 'approved by commissioners', 'tabled', 'first reading', etc — default to pending if unclear)",
+  "notes": "one-sentence plain-English summary of what's being requested/approved"
+}}
+
+Only say a field is empty/zero if you genuinely cannot find it anywhere in the text — search thoroughly before giving up."""
 
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
         message = client.messages.create(
-            model="claude-haiku-4-5-20251001",
+            model="claude-sonnet-4-20250514",
             max_tokens=400,
             messages=[{"role": "user", "content": prompt}]
         )
