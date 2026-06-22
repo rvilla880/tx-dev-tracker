@@ -218,6 +218,57 @@ class BaseScraper:
             "User-Agent": "Mozilla/5.0 (compatible; TXDevTracker/1.0; research)"
         })
 
+    NOISE_PATTERNS = [
+        r"jury duty", r"jury service", r"poll worker", r"voter (information|registration|alert)",
+        r"quicklinks", r"sign up for .* alerts", r"news & announcements", r"press release",
+        r"burn ban", r"holiday schedule", r"view all events", r"/calendar\.", r"our history",
+        r"contact us search agendas", r"site map", r"skip to (main )?content",
+    ]
+
+    def is_noise(self, text: str) -> bool:
+        """
+        Reject windows that are clearly site navigation, jury duty lists,
+        event calendars, or other boilerplate rather than real agenda items.
+        A window must mention at least one concrete signal (a number that
+        looks like acreage/units, or a company-suffix like LLC/LP/Inc) to
+        be considered real content worth sending to Claude.
+        """
+        text_lower = text.lower()
+        noise_hits = sum(1 for p in self.NOISE_PATTERNS if re.search(p, text_lower))
+        if noise_hits >= 2:
+            return True
+
+        has_concrete_signal = bool(
+            re.search(r"\d+\.?\d*\s*(?:acres?|ac\.)", text_lower) or
+            re.search(r"\d+\s*(?:lots?|units?|homes?|dwellings?)", text_lower) or
+            re.search(r"\b(llc|l\.l\.c\.|lp|l\.p\.|ltd|inc\.?|corporation|corp\.?)\b", text_lower) or
+            re.search(r"\bcase\s*#|\bpermit\s*#|\bproject\s*#", text_lower)
+        )
+        return not has_concrete_signal
+
+    def find_agenda_links(self, html: str, base_url: str) -> list[tuple[str, str]]:
+        """
+        Find links to actual agenda documents (PDFs or agenda detail pages)
+        on a county homepage/commissioners-court page, rather than treating
+        the homepage itself as the agenda content.
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        links = soup.find_all("a", href=True)
+        agenda_links = []
+        for a in links:
+            label = a.get_text(strip=True)
+            href = a["href"]
+            label_lower = label.lower()
+            href_lower = href.lower()
+            if (
+                "agenda" in label_lower or "agenda" in href_lower
+                or "minutes" in label_lower
+                or href_lower.endswith(".pdf")
+            ):
+                full_url = href if href.startswith("http") else base_url.rstrip("/") + "/" + href.lstrip("/")
+                agenda_links.append((label, full_url))
+        return agenda_links[:6]  # cap per county to limit requests
+
     def is_residential(self, text: str) -> bool:
         """Return True if text contains residential development keywords."""
         text_lower = text.lower()
@@ -274,6 +325,9 @@ class BaseScraper:
         Uses regex heuristics; augment with Claude API for better extraction.
         """
         if not self.is_residential(text):
+            return None
+
+        if self.is_noise(text):
             return None
 
         # Extract acreage
@@ -354,6 +408,20 @@ class BaseScraper:
     def scrape(self) -> list[dict]:
         raise NotImplementedError
 
+    def extract_pdf_text(self, url: str) -> str:
+        """Shared PDF text extraction used by any scraper that finds PDF links."""
+        if not HAS_PDF:
+            return ""
+        try:
+            resp = self.session.get(url, timeout=30)
+            tmp = Path(f"/tmp/agenda_{abs(hash(url)) % 99999}.pdf")
+            tmp.write_bytes(resp.content)
+            with pdfplumber.open(tmp) as pdf:
+                return "\n".join(p.extract_text() or "" for p in pdf.pages[:8])
+        except Exception as e:
+            log.warning(f"PDF extraction failed for {url}: {e}")
+            return ""
+
 
 class CivicPlusScraper(BaseScraper):
     """
@@ -386,7 +454,7 @@ class CivicPlusScraper(BaseScraper):
             time.sleep(1)  # Polite delay
 
             if href.lower().endswith(".pdf"):
-                text = self._extract_pdf_text(full_url)
+                text = self.extract_pdf_text(full_url)
             else:
                 page_html = self.fetch(full_url)
                 text = BeautifulSoup(page_html,"html.parser").get_text(" ")
@@ -405,45 +473,59 @@ class CivicPlusScraper(BaseScraper):
 
         return filings
 
-    def _extract_pdf_text(self, url: str) -> str:
-        if not HAS_PDF:
-            return ""
-        try:
-            resp = self.session.get(url, timeout=30)
-            tmp = Path("/tmp/agenda_tmp.pdf")
-            tmp.write_bytes(resp.content)
-            with pdfplumber.open(tmp) as pdf:
-                return "\n".join(p.extract_text() or "" for p in pdf.pages[:8])
-        except Exception as e:
-            log.warning(f"PDF extraction failed: {e}")
-            return ""
-
 
 class StaticScraper(BaseScraper):
     """
-    Simple HTML scraper for counties with static agenda pages.
-    Looks for PDF links and agenda item text.
+    Scraper for counties with simple/static commissioners-court pages.
+    Follows links to actual agenda documents (PDF or sub-pages) rather
+    than treating the homepage's nav/footer text as agenda content.
     """
 
     def scrape(self) -> list[dict]:
         filings = []
-        html = self.fetch(self.county["agenda_url"])
+        base_url = self.county["agenda_url"]
+        html = self.fetch(base_url)
         if not html:
             return filings
 
-        soup = BeautifulSoup(html, "html.parser")
-        text = soup.get_text(" ")
-        windows = self.find_context_windows(text)
+        agenda_links = self.find_agenda_links(html, base_url)
 
-        for window in windows:
-            filing = self.extract_filing_details(
-                window,
-                self.county["name"],
-                self.county["hub"],
-                datetime.now().strftime("%Y-%m-%d")
-            )
-            if filing:
-                filings.append(filing)
+        if not agenda_links:
+            # No agenda links found — fall back to scanning the page itself,
+            # but noise filtering will reject most of what it finds.
+            log.info(f"  ⚠ No agenda/PDF links found on {self.county['name']} homepage — scanning page text only")
+            text = BeautifulSoup(html, "html.parser").get_text(" ")
+            windows = self.find_context_windows(text)
+            for window in windows:
+                filing = self.extract_filing_details(
+                    window, self.county["name"], self.county["hub"],
+                    datetime.now().strftime("%Y-%m-%d")
+                )
+                if filing:
+                    filings.append(filing)
+            return filings
+
+        for title, link_url in agenda_links:
+            log.info(f"  → Fetching: {title[:60] or link_url[:60]}")
+            time.sleep(1)  # Polite delay
+
+            if link_url.lower().endswith(".pdf"):
+                text = self.extract_pdf_text(link_url)
+            else:
+                page_html = self.fetch(link_url)
+                if not page_html:
+                    continue
+                text = BeautifulSoup(page_html, "html.parser").get_text(" ")
+
+            windows = self.find_context_windows(text)
+            for window in windows:
+                filing = self.extract_filing_details(
+                    window, self.county["name"], self.county["hub"],
+                    datetime.now().strftime("%Y-%m-%d")
+                )
+                if filing:
+                    filings.append(filing)
+
         return filings
 
 
