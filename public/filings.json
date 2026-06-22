@@ -1,84 +1,8 @@
 {
-  "generated_at": "2026-06-22T03:01:25.439473",
+  "generated_at": "2026-06-22T03:20:35.179582",
   "lookback_days": 10,
   "counties_scraped": 26,
-  "filings_found": 5,
+  "filings_found": 0,
   "errors": [],
-  "filings": [
-    {
-      "id": "Denton_2026-06-22_08757",
-      "date": "2026-06-22",
-      "county": "Denton",
-      "hub": "fort_worth",
-      "developer": "",
-      "project": "",
-      "type": "Agenda Item",
-      "acres": 0.0,
-      "units": 0,
-      "address": "",
-      "permit": "ting",
-      "status": "pending",
-      "notes": "Poll Worker Program Volunteers in Police Service /QuickLinks.aspx Sign Up for Denton County Alerts Denton County is Now Hiring! Department Directory Report a Concern Welcome to Denton County The Judge"
-    },
-    {
-      "id": "Ellis_2026-06-22_36502",
-      "date": "2026-06-22",
-      "county": "Ellis",
-      "hub": "fort_worth",
-      "developer": "",
-      "project": "",
-      "type": "Replat",
-      "acres": 0.0,
-      "units": 0,
-      "address": "",
-      "permit": "",
-      "status": "pending",
-      "notes": "llis County - March 12, 2024 Johnny Ray James - March 04, 2024 Bobby Trevino - February 21, 2024 Trenton Adams - January 29, 2024 Joseph Lavon Green - January 24, 2024 J. Zaleta MDT PMY December 28, 2"
-    },
-    {
-      "id": "Ellis_2026-06-22_16357",
-      "date": "2026-06-22",
-      "county": "Ellis",
-      "hub": "fort_worth",
-      "developer": "",
-      "project": "",
-      "type": "Replat",
-      "acres": 0.0,
-      "units": 0,
-      "address": "",
-      "permit": "for",
-      "status": "pending",
-      "notes": "& Highlights Keep informed with the County News & Announcements Holidays Press Releases Our History News & Announcements Road Closures in Ellis County As of June 10, 2026, this is the list of the most"
-    },
-    {
-      "id": "Comal_2026-06-22_08485",
-      "date": "2026-06-22",
-      "county": "Comal",
-      "hub": "georgetown",
-      "developer": "",
-      "project": "",
-      "type": "Agenda Item",
-      "acres": 0.0,
-      "units": 0,
-      "address": "",
-      "permit": "ting",
-      "status": "pending",
-      "notes": "Services Notices Contact Us Search Agendas & Minutes Voter Information Burn Ban Permitting, Maps, & Roads Jury Duty Property Tax & Motor Vehicle 2026 Adopted Budget Engineer's Office Job Openings Orde"
-    },
-    {
-      "id": "Comal_2026-06-22_99849",
-      "date": "2026-06-22",
-      "county": "Comal",
-      "hub": "georgetown",
-      "developer": "",
-      "project": "",
-      "type": "Agenda Item",
-      "acres": 0.0,
-      "units": 0,
-      "address": "",
-      "permit": "",
-      "status": "pending",
-      "notes": "5 26 27 28 29 30 1 2 3 4 Thu, Jun. 25 Commissioners Court Commissioners Court Read on... View All Events /Calendar.aspx Contact Us Main County Mailbox 150 N. Seguin Avenue New Braunfels, Texas 78130 P"
-    }
-  ]
+  "filings": []
 }
