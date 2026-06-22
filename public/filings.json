@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-06-21T13:12:37.013858",
+  "generated_at": "2026-06-22T03:01:25.439473",
   "lookback_days": 10,
   "counties_scraped": 26,
   "filings_found": 5,
   "errors": [],
   "filings": [
     {
-      "id": "Denton_2026-06-21_14118",
-      "date": "2026-06-21",
+      "id": "Denton_2026-06-22_08757",
+      "date": "2026-06-22",
       "county": "Denton",
       "hub": "fort_worth",
       "developer": "",
@@ -16,13 +16,13 @@
       "acres": 0.0,
       "units": 0,
       "address": "",
-      "permit": "Property",
+      "permit": "ting",
       "status": "pending",
-      "notes": "No residential development agenda item content found in provided text"
+      "notes": "Poll Worker Program Volunteers in Police Service /QuickLinks.aspx Sign Up for Denton County Alerts Denton County is Now Hiring! Department Directory Report a Concern Welcome to Denton County The Judge"
     },
     {
-      "id": "Ellis_2026-06-21_23357",
-      "date": "2026-06-21",
+      "id": "Ellis_2026-06-22_36502",
+      "date": "2026-06-22",
       "county": "Ellis",
       "hub": "fort_worth",
       "developer": "",
@@ -31,28 +31,28 @@
       "acres": 0.0,
       "units": 0,
       "address": "",
-      "permit": "Approval",
+      "permit": "",
       "status": "pending",
-      "notes": "No residential development information found in this document - content consists only of Bail Bond Board meeting agenda listings"
+      "notes": "llis County - March 12, 2024 Johnny Ray James - March 04, 2024 Bobby Trevino - February 21, 2024 Trenton Adams - January 29, 2024 Joseph Lavon Green - January 24, 2024 J. Zaleta MDT PMY December 28, 2"
     },
     {
-      "id": "Ellis_2026-06-21_22443",
-      "date": "2026-06-21",
+      "id": "Ellis_2026-06-22_16357",
+      "date": "2026-06-22",
       "county": "Ellis",
       "hub": "fort_worth",
       "developer": "",
-      "project": "Stewart's Property",
+      "project": "",
       "type": "Replat",
       "acres": 0.0,
-      "units": 2,
+      "units": 0,
       "address": "",
       "permit": "for",
-      "status": "under_review",
-      "notes": "Replat of Lot 1, Block 1 into two lots (1A and 1B) for Ellis County Commissioners' Court consideration."
+      "status": "pending",
+      "notes": "& Highlights Keep informed with the County News & Announcements Holidays Press Releases Our History News & Announcements Road Closures in Ellis County As of June 10, 2026, this is the list of the most"
     },
     {
-      "id": "Comal_2026-06-21_38395",
-      "date": "2026-06-21",
+      "id": "Comal_2026-06-22_08485",
+      "date": "2026-06-22",
       "county": "Comal",
       "hub": "georgetown",
       "developer": "",
@@ -63,11 +63,11 @@
       "address": "",
       "permit": "ting",
       "status": "pending",
-      "notes": "No residential development agenda item content found in provided text"
+      "notes": "Services Notices Contact Us Search Agendas & Minutes Voter Information Burn Ban Permitting, Maps, & Roads Jury Duty Property Tax & Motor Vehicle 2026 Adopted Budget Engineer's Office Job Openings Orde"
     },
     {
-      "id": "Comal_2026-06-21_84788",
-      "date": "2026-06-21",
+      "id": "Comal_2026-06-22_99849",
+      "date": "2026-06-22",
       "county": "Comal",
       "hub": "georgetown",
       "developer": "",
@@ -78,7 +78,7 @@
       "address": "",
       "permit": "",
       "status": "pending",
-      "notes": "No residential development agenda item details found in provided text"
+      "notes": "5 26 27 28 29 30 1 2 3 4 Thu, Jun. 25 Commissioners Court Commissioners Court Read on... View All Events /Calendar.aspx Contact Us Main County Mailbox 150 N. Seguin Avenue New Braunfels, Texas 78130 P"
     }
   ]
 }
