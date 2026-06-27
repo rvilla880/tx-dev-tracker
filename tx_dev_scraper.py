@@ -65,22 +65,17 @@ RESIDENTIAL_KEYWORDS = [
 # Each entry: county name, hub, agenda URL, portal type
 COUNTIES = [
     # ── Fort Worth / DFW ──────────────────────────────────────────────────────
-    {
-        "name": "Tarrant", "hub": "fort_worth",
-        "agenda_url": "https://www.tarrantcounty.com/en/commissioner-court/commissioners-court.html",
-        "type": "static",
-        "notes": "Agenda packets listed on commissioners court page"
-    },
-    {
-        "name": "Dallas", "hub": "fort_worth",
-        "agenda_url": "https://www.dallascounty.org/government/commissioners-court/minutes-agendas.php",
-        "type": "static",
-    },
+    # NOTE: Tarrant (custom "TechShare.AgendaManagement" portal) and Dallas
+    # (CivicWeb portal, robots.txt disallows automated access) are temporarily
+    # disabled — their platforms need dedicated scrapers not yet built.
+    # Verified real URLs for future work:
+    #   Tarrant: https://agendamgmtprod.tarrantcountytx.gov/
+    #   Dallas:  https://dallascounty.civicweb.net/portal/ (robots-blocked)
     {
         "name": "Denton", "hub": "fort_worth",
-        "agenda_url": "https://www.dentoncounty.gov/agendacenter",
+        "agenda_url": "https://www.dentoncounty.gov/AgendaCenter",
         "type": "civicplus",
-        "notes": "CivicPlus agenda portal — use AgendaCenter scraper"
+        "notes": "Genuine CivicPlus — verified June 2026"
     },
     {
         "name": "Collin", "hub": "fort_worth",
@@ -89,13 +84,15 @@ COUNTIES = [
     },
     {
         "name": "Johnson", "hub": "fort_worth",
-        "agenda_url": "https://www.johnsoncountytx.org/agendacenter",
-        "type": "civicplus",
+        "agenda_url": "https://www.johnsoncountytx.org/commissioners-court/public-information/meeting-agendas",
+        "type": "static",
+        "notes": "Verified June 2026 — custom site, NOT CivicPlus despite original config"
     },
     {
         "name": "Parker", "hub": "fort_worth",
-        "agenda_url": "https://www.parkercountytx.com/agendacenter",
+        "agenda_url": "https://www.parkercountytx.gov/AgendaCenter",
         "type": "civicplus",
+        "notes": "Verified June 2026 — was .com, corrected to .gov"
     },
     {
         "name": "Wise", "hub": "fort_worth",
@@ -104,8 +101,9 @@ COUNTIES = [
     },
     {
         "name": "Ellis", "hub": "fort_worth",
-        "agenda_url": "https://www.co.ellis.tx.us/agendacenter",
+        "agenda_url": "https://tx-elliscounty.civicplus.com/agendacenter",
         "type": "civicplus",
+        "notes": "Verified June 2026 — confirmed genuine CivicPlus subdomain"
     },
     {
         "name": "Kaufman", "hub": "fort_worth",
@@ -123,17 +121,15 @@ COUNTIES = [
         "type": "civicplus",
     },
     # ── Georgetown / Austin ───────────────────────────────────────────────────
+    # NOTE: Travis County uses CivicClerk (traviscotx.portal.civicclerk.com) —
+    # confirmed to have excellent residential development content (LURA/SHIP
+    # project filings) but needs a dedicated scraper, not yet built. Temporarily
+    # disabled rather than left silently failing.
     {
         "name": "Williamson", "hub": "georgetown",
-        "agenda_url": "https://www.wilco.org/Departments/CountyJudge/CommissionersCourt",
-        "type": "static",
-        "notes": "High-yield county — active development corridor"
-    },
-    {
-        "name": "Travis", "hub": "georgetown",
-        "agenda_url": "https://www.traviscountytx.gov/commissioners-court/current-agenda",
-        "type": "legistar",
-        "notes": "Uses Legistar-style portal, JS-heavy"
+        "agenda_url": "https://www.wilcotx.gov/AgendaCenter",
+        "type": "civicplus",
+        "notes": "Genuine CivicPlus — verified June 2026; high-yield county"
     },
     {
         "name": "Hays", "hub": "georgetown",
@@ -142,8 +138,9 @@ COUNTIES = [
     },
     {
         "name": "Bastrop", "hub": "georgetown",
-        "agenda_url": "https://www.co.bastrop.tx.us/agendacenter",
-        "type": "civicplus",
+        "agenda_url": "https://www.co.bastrop.tx.us/page/co.county_clerk_Courtagendas",
+        "type": "static",
+        "notes": "Verified June 2026 — custom site, NOT CivicPlus despite original config"
     },
     {
         "name": "Bell", "hub": "georgetown",
@@ -168,9 +165,9 @@ COUNTIES = [
     # ── San Antonio ───────────────────────────────────────────────────────────
     {
         "name": "Bexar", "hub": "san_antonio",
-        "agenda_url": "https://bexar.legistar.com/Calendar.aspx",
-        "type": "legistar",
-        "notes": "High-yield — use Legistar API if available"
+        "agenda_url": "https://www.bexar.org/AgendaCenter",
+        "type": "civicplus",
+        "notes": "Genuine CivicPlus — verified June 2026; high-yield county"
     },
     {
         "name": "Guadalupe", "hub": "san_antonio",
